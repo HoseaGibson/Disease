@@ -6,6 +6,7 @@ from PIL import ImageTk, Image
 
 # Create a database for employees information to login
 from Screens.account import accounts
+from Screens.clients import client
 
 createUserDb()
 
@@ -49,7 +50,7 @@ class LoginWindow:
         else:
             self.loginUsernameEntry.delete(0, END)
             self.loginPasswordEntry.delete(0, END)
-            self.clientScreen()
+            client()
 
     def createAcc(self):
         self.master.destroy()
