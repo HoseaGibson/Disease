@@ -1,6 +1,9 @@
 from tkinter import *
 from tkinter import messagebox as ms
+
 from Db.backend import clientTableDb, insertPatient
+
+from symptomsDisease.information import Info
 
 clientTableDb()
 
@@ -9,7 +12,7 @@ class client:
     def __init__(self):
         self.masterClients = Tk()
         self.masterClients.title('Login')
-        self.masterClients.geometry('1350x700')
+        self.masterClients.geometry('1400x700')
         # Define varaiables
         self.firstnameText = StringVar()
         self.lastnameText = StringVar()
@@ -72,11 +75,111 @@ class client:
         self.sym5Entry = Entry(self.masterClients, textvariable=self.symptom5, width=20)
         self.sym5Entry.grid(row=4, column=3)
         # Button for saving new user or cancel and return back to login
-        self.saveBtn = Button(self.masterClients, text='Save', width=12, bg='skyblue', command=self.saveUser)
-        self.saveBtn.grid(row=5, column=1, pady=12)
-        self.cancelBtn = Button(self.masterClients, text='Cancel', width=12, bg='gray', command=self.loginScreen)
-        self.cancelBtn.grid(row=5, column=2, pady=12)
+        self.saveBtn = Button(self.masterClients, text='Save', width=12, bg='skyblue', command=self.insert)
+        self.saveBtn.grid(row=6, column=0, pady=12)
+        self.viewBtn = Button(self.masterClients, text="View Patients", width=12, command=self.gotoSearch,
+                              bg="blue", fg="white")
+        self.viewBtn.grid(row=6, column=1)
+        self.cancelBtn = Button(self.masterClients, text='Exit', width=12, bg='gray', command=self.returnLoginScreen)
+        self.cancelBtn.grid(row=6, column=2)
+
+        # Declare options so and sort items in order
+        self.symptomList = ['back_pain', 'constipation', 'abdominal_pain', 'diarrhoea', 'mild_fever', 'yellow_urine',
+                            'yellowing_of_eyes', 'acute_liver_failure', 'fluid_overload', 'swelling_of_stomach',
+                            'swelled_lymph_nodes', 'malaise', 'blurred_and_distorted_vision', 'phlegm',
+                            'throat_irritation',
+                            'redness_of_eyes', 'sinus_pressure', 'runny_nose', 'congestion', 'chest_pain',
+                            'weakness_in_limbs',
+                            'fast_heart_rate', 'pain_during_bowel_movements', 'pain_in_anal_region', 'bloody_stool',
+                            'irritation_in_anus', 'neck_pain', 'dizziness', 'cramps', 'bruising', 'obesity',
+                            'swollen_legs',
+                            'swollen_blood_vessels', 'puffy_face_and_eyes', 'enlarged_thyroid', 'brittle_nails',
+                            'swollen_extremeties', 'excessive_hunger', 'extra_marital_contacts',
+                            'drying_and_tingling_lips',
+                            'slurred_speech', 'knee_pain', 'hip_joint_pain', 'muscle_weakness', 'stiff_neck',
+                            'swelling_joints',
+                            'movement_stiffness', 'spinning_movements', 'loss_of_balance', 'unsteadiness',
+                            'weakness_of_one_body_side', 'loss_of_smell', 'bladder_discomfort', 'foul_smell_of urine',
+                            'continuous_feel_of_urine', 'passage_of_gases', 'internal_itching', 'toxic_look_(typhos)',
+                            'depression', 'irritability', 'muscle_pain', 'altered_sensorium', 'red_spots_over_body',
+                            'belly_pain',
+                            'abnormal_menstruation', 'dischromic _patches', 'watering_from_eyes', 'increased_appetite',
+                            'polyuria', 'family_history', 'mucoid_sputum',
+                            'rusty_sputum', 'lack_of_concentration', 'visual_disturbances',
+                            'receiving_blood_transfusion',
+                            'receiving_unsterile_injections', 'coma', 'stomach_bleeding', 'distention_of_abdomen',
+                            'history_of_alcohol_consumption', 'fluid_overload', 'blood_in_sputum',
+                            'prominent_veins_on_calf',
+                            'palpitations', 'painful_walking', 'pus_filled_pimples', 'blackheads', 'scurring',
+                            'skin_peeling',
+                            'silver_like_dusting', 'small_dents_in_nails', 'inflammatory_nails', 'blister',
+                            'red_sore_around_nose',
+                            'yellow_crust_ooze']
+
+        self.symptom1.set(None)
+        self.symptom2.set(None)
+        self.symptom3.set(None)
+        self.symptom4.set(None)
+        self.symptom5.set(None)
+
+        self.OPTIONS = sorted(self.symptomList)
+
+        # Entries for symptoms that can be selected in menu
+        self.patientSym1Entry = OptionMenu(self.masterClients, self.symptom1, *self.OPTIONS)
+        self.patientSym1Entry.grid(row=0, column=4)
+        self.patientSym2Entry = OptionMenu(self.masterClients, self.symptom2, *self.OPTIONS)
+        self.patientSym2Entry.grid(row=1, column=4)
+        self.patientSym3Entry = OptionMenu(self.masterClients, self.symptom3, *self.OPTIONS)
+        self.patientSym3Entry.grid(row=2, column=4)
+        self.patientSym4Entry = OptionMenu(self.masterClients, self.symptom4, *self.OPTIONS)
+        self.patientSym4Entry.grid(row=3, column=4)
+        self.patientSym5Entry = OptionMenu(self.masterClients, self.symptom5, *self.OPTIONS)
+        self.patientSym5Entry.grid(row=4, column=4)
+
+        # Buttons for Results of each algorithm
+        self.randomBtn = Button(self.masterClients, text="Random Forest", width=16, height=2,
+                                command=self.randomBtnResults,bg="green", fg="yellow")
+        self.randomBtn.grid(row=0, column=6, padx=10)
+        self.decisionBtn = Button(self.masterClients, text="Decision Tree", width=16, height=2,
+                                  command=self.decisionBtnResults, bg="green", fg="yellow")
+        self.decisionBtn.grid(row=1, column=6, padx=10)
+        self.bayesBtn = Button(self.masterClients, text="Naive Bayes", width=16, height=2, command=self.bayesBtnResults,
+                               bg="green", fg="yellow")
+        self.bayesBtn.grid(row=2, column=6, padx=10)
+        self.accResultBtn = Button(self.masterClients, text="VIEW ACCURACY PERSONNEL ONLY", width=30, height=2,
+                                   command=self.graphingInfo, bg="red", fg="white")
+        self.accResultBtn.grid(row=6, column=4, padx=10)
+
+
+        self.randomLabel = Label(self.masterClients, text="Random Forest", fg="white", bg="red")
+        self.randomLabel.grid(row=0, column=5, padx=10, pady=30, sticky=W)
+        self.decisionLabel = Label(self.masterClients, text="Decision Tree", fg="white", bg="red")
+        self.decisionLabel.grid(row=1, column=5, padx=10, pady=30, sticky=W)
+        self.bayesLabel = Label(self.masterClients, text="Naive Bayes", fg="white", bg="red")
+        self.bayesLabel.grid(row=2, column=5, padx=10, pady=30, sticky=W)
         self.masterClients.mainloop()
+
+    def graphingInfo(self):
+        g = Info()
+        g.graphVis(self.masterClients, self.symptom1, self.symptom2, self.symptom3, self.symptom4, self.symptom5)
+
+    # Function to call the random forest function and display the results
+    def randomBtnResults(self):
+        a = Info()
+        a.randomForest(self.masterClients, self.symptom1, self.symptom2, self.symptom3, self.symptom4,
+                       self.symptom5)
+
+    # Function to call the decision tree function and display the results
+    def decisionBtnResults(self):
+        d = Info()
+        d.decisionTree(self.masterClients, self.symptom1, self.symptom2, self.symptom3, self.symptom4,
+                       self.symptom5)
+
+    # Function to call the bayes function and display the results
+    def bayesBtnResults(self):
+        b = Info()
+        b.navieBayes(self.masterClients, self.symptom1, self.symptom2, self.symptom3, self.symptom4,
+                     self.symptom5)
 
     def insert(self):
 
@@ -95,5 +198,15 @@ class client:
             ms.showerror('Please enter a password')
         else:
             insertPatient(self.firstEntry.get(), self.lastEntry.get(), self.dobEntry.get(), self.addressEntry.get(),
-                          self.zipEntry.get(), self.phoneEntry.get(), self.sym1Entry.get(), self.sym2Entry.get(),
-                          self.sym3Entry.get(), self.sym4Entry.get(), self.sym5Entry.get())
+                          self.zipEntry.get(), self.phoneEntry.get(), self.symptom1.get(), self.symptom2.get(),
+                          self.symptom3.get(), self.symptom4.get(), self.symptom5.get())
+
+    def gotoSearch(self):
+        self.masterClients.destroy()
+        from Screens.searcClient import Search
+        Search()
+
+    def returnLoginScreen(self):
+        self.masterClients.destroy()
+        from Screens.login import LoginWindow
+        LoginWindow()
