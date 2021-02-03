@@ -14,7 +14,7 @@ def createUserDb():
 
 
 def clientTableDb():
-    with sqlite3.connect('MODEL/clients.db') as db:
+    with sqlite3.connect('clients.db') as db:
         c = db.cursor()
     c.execute("""CREATE TABLE IF NOT EXISTS client(firstname TEXT NOT NULL,
                     lastname TEXT NOT NULL,
@@ -69,9 +69,25 @@ def insertPatient(first, last, dob, add, zipcode, phone, sym1, sym2, sym3, sym4,
     if f:
         ms.showerror('User already exist')
     insertSql = 'INSERT INTO client(firstname, lastname, birthdate, address, postal, phone, symptom1, symptom2, ' \
-                'symptom3, symptom4, symptom5) VALUES(?,?,?,?,?,?,?,?,?,?) '
-    con.execute(insertSql,
-                [first, last, dob, add, zipcode, phone, sym1, sym2, sym3, sym4,
-                 sym5])
+                'symptom3, symptom4, symptom5) VALUES(?,?,?,?,?,?,?,?,?,?,?) '
+    con.execute(insertSql, [first, last, dob, add, zipcode, phone, sym1, sym2, sym3, sym4, sym5])
+    db.commit()
+    db.close()
+
+def viewAll():
+    with sqlite3.connect('clients.db') as db:
+        c = db.cursor()
+    sql = 'SELECT *, oid FROM client'
+    c.execute(sql)
+    records = c.fetchall()
+    printRd = ""
+    for record in records:
+        printRd += str(record[0]) + " " + str(record[1]) + " " + str(record[2]) + " " + str(record[3]) + " " + str(
+            record[4]) + " " + str(record[5]) + " " + str(record[6]) + " " + str(record[7]) + " " + str(
+            record[8]) + " " + str(record[9]) + '\n'
+    queryViewLabel = Label(self.master, text=self.printRd)
+
+    queryViewLabel.grid(row=8, column=0, columnspan=2)
+
     db.commit()
     db.close()
