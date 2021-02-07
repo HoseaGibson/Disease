@@ -1,12 +1,6 @@
 from tkinter import *
-import tkinter as tk
-
 from Db.backend import createUserDb, loginUserDb
-from PIL import ImageTk, Image
-
-# Create a database for employees information to login
 from Screens.account import accounts
-from Screens.clients import client
 
 createUserDb()
 
@@ -37,20 +31,12 @@ class LoginWindow:
         self.createBtn.grid(row=5, column=2, pady=12)
         self.master.mainloop()
 
-
     def login(self):
-        self.loginUsernameEntry.get()
-        self.loginPasswordEntry.get()
-
-        loginUserDb(self.loginUsernameEntry.get(), self.loginPasswordEntry.get())
-        if self.loginUsernameEntry.get() == "" or self.loginPasswordEntry.get() == "":
-            self.failLabel = Label(self.master, text="Username or password are required to login!",
-                                   font=('bold', 10))
-            self.failLabel.grid(row=6, columnspan=2)
-        else:
-            self.loginUsernameEntry.delete(0, END)
-            self.loginPasswordEntry.delete(0, END)
-            client()
+        self.user = self.userText
+        self.passW = self.passText
+        self.clearUser = self.loginUsernameEntry
+        self.clearPass = self.loginPasswordEntry
+        loginUserDb(self.user.get(), self.passW.get(), self.loginUsernameEntry, self.loginPasswordEntry, self.master)
 
     def createAcc(self):
         self.master.destroy()
