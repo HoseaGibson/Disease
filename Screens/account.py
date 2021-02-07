@@ -36,7 +36,7 @@ class accounts:
         # Button for saving new user or cancel and return back to login
         self.saveBtn = Button(self.masterAcc, text='Save', width=12, bg='skyblue', command=self.saveUser)
         self.saveBtn.grid(row=5, column=1, pady=12)
-        self.cancelBtn = Button(self.masterAcc, text='Cancel', width=12, bg='gray', command=self.loginScreen)
+        self.cancelBtn = Button(self.masterAcc, text='Cancel', width=12, bg='gray', command=self.returnLoginScreen)
         self.cancelBtn.grid(row=5, column=2, pady=12)
         self.masterAcc.mainloop()
 
@@ -53,18 +53,10 @@ class accounts:
         else:
             addUserAccountDb(self.firstEntry.get(), self.lastEntry.get(), self.usernameEntry.get(),
                              self.passwordEntry.get())
+            self.returnLoginScreen()
 
-    def error(self):
-        self.failLabel = Label(self.masterAcc, text="Please enter all details all required has a '*'",
-                               font=('bold', 10))
-        self.failLabel.grid(row=6, columnspan=2)
 
-    def error2(self):
-        self.created = Label(self.masterAcc, text="User Created",
-                             font=('bold', 10))
-        self.created.grid(row=6, columnspan=2)
-
-    def loginScreen(self):
-        # self.master.destroy()
+    def returnLoginScreen(self):
+        self.masterAcc.destroy()
         from Screens.login import LoginWindow
         LoginWindow()
