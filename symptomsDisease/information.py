@@ -257,6 +257,7 @@ class Info:
         self.features = list(self.X)
         self.featureImport = pd.Series(self.model.feature_importances_, index=self.features)
         self.modelPath = pd.Series(self.model.decision_path(self.X))
+
         self.modelProb = self.model.predict_proba(self.XTest)
 
         self.mylist = [sym1.get(), sym2.get(), sym3.get(), sym4.get(), sym5.get()]
